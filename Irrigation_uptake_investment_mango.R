@@ -1,3 +1,6 @@
+git config --global user.email "s6aomend@uni-bonn.de"
+git config --global user.name "Alejandro Mendizabal"
+
 
 # Housekeeping
 rm(list = ls())
@@ -8,9 +11,6 @@ setwd("C:/Users/tito_/Dropbox/Thesis/R")
 
 # Library shit
 library(decisionSupport)
-library(igraph)
-library(DiagrammeR)
-
 
 # Input table
 income_estimates <- data.frame(variable = c("mango_price_ton_MXN", 
