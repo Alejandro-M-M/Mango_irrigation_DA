@@ -1,6 +1,3 @@
-git config --global user.email "s6aomend@uni-bonn.de"
-git config --global user.name "Alejandro Mendizabal"
-
 
 # Housekeeping
 rm(list = ls())
@@ -13,77 +10,23 @@ setwd("C:/Users/tito_/Dropbox/Thesis/R")
 library(decisionSupport)
 
 # Input table
-income_estimates <- data.frame(variable = c("mango_price_ton_MXN", 
-                                          "Water_needed_irrigation_mm", 
-                                          "growing_season_months",
-                                          "rainwaer_growing_season_mm",
-                                          "Investment_cost_well_MXN",
-                                          "Investment_cost_waterpot_MXN",
-                                          "water_retention_waterpot_m3",
-                                          "maintenance_waterpot_year_MXN",
-                                          "maintenance_well_year_MXN",
-                                          "yield_increase",
-                                          "Var_CV",
-                                          "mango_yield_tons_per_hec",
-                                          "market_risk_sales"),
-                             lower = c(3000, 300, 2, 570, 10000, 20000, 200, 2000, 1000, 0.1, 0.75, 5,
-                                       0.1),
-                             median = NA,
-                             upper = c(25000, 800, 5, 725, 25000, 30000, 500, 5000, 5000, 0.5, 0.75, 12,
-                                       1),
-                             distribution = c("posnorm", 
-                                              "posnorm", 
-                                              "posnorm", 
-                                              "posnorm",
-                                              "posnorm",
-                                              "posnorm",
-                                              "posnorm", 
-                                              "posnorm", 
-                                              "posnorm", 
-                                              "posnorm",
-                                              "const",
-                                              "posnorm",
-                                              "posnorm"),
-                             label = c("Mango sale price for farmers",
-                                       "Water for irrigation",
-                                       "Lenght of the growing season",
-                                       "rainwater during growing season",
-                                       "Investment cost - well",
-                                       "Investment cost - waterpot",
-                                       "Amount of water in waterpot",
-                                       "Maintenance cost for the waterpot",
-                                       "Maintenance cost for the well",
-                                       "Increase in yield when irrigated",
-                                       "Variation thing",
-                                       "Mango yield tons/hectare",
-                                       "Risk of not selling extra production"),
-                             Description = c("Mango sale price for the farmers per tons in MXN",
-                                             "Water that the orchard needs for irrigation in milimeters",
-                                             "Lenght of the growing seasno in months",
-                                             "rainwater present during the growing season",
-                                             "Investment cost to install a well",
-                                             "Investment cost to install a waterpot",
-                                             "Amount of water the waterpot can keep",
-                                             "Maintenance cost for the waterpot",
-                                             "Maintenance cost for the well",
-                                             "Increase in yield when irrigated",
-                                             "Variation thing",
-                                             "Mango yield expressed in tons/hectare",
-                                             "Risk of not being able to sell the extra production of mangos"))
+income_estimates <- read.csv("Input_table_uptake.csv")
 
 # Function
 irrigation_function <- function(){
   
   farm_size <- 2
   
-  Prices <- vv(var_mean = mango_price_ton_MXN, 
-               var_CV = Var_CV,
-               relative_trend = 5,
-               n = 5)
+  prices_irrigation <- vv(var_mean = mango_price_irrigation, 
+                       var_CV = Var_CV,
+                       relative_trend = 5,
+                       n = 5)
   
   
-  extra_income <- Prices*((1+yield_increase)*mango_yield_tons_per_hec*farm_size*
-                            market_risk_sales)
+  prices_no_irrigation <- vv(var_mean = mango_price_no_irrigation, 
+                          var_CV = Var_CV,
+                          relative_trend = 5,
+                          n = 5)
   
   # Risk of low rainfall
   "adjusted_yield_increase <- chance_event(chance = Residue_risk, 
@@ -92,11 +35,11 @@ irrigation_function <- function(){
                                                n = 5)"
   
   # Profit without irrigation
-  profit_no_irrigation <- Prices*mango_yield_tons_per_hec*farm_size
+  profit_no_irrigation <- prices_no_irrigation*yield_no_irrigation*farm_size
   
   # Profit with irrigation
-  profit_with_irrigation <- profit_no_irrigation+extra_income-Investment_cost_waterpot_MXN-
-    (maintenance_waterpot_year_MXN*5)
+  profit_with_irrigation <- (prices_irrigation*yield_irrigation*farm_size*market_risk_sales)
+  -investment_cost_well-study_cost_well-(maintenance_waterpot_year*5)
   
   # Discount rate
   NPV_no_irrigation <- discount(profit_no_irrigation, discount_rate = 10, calculate_NPV = TRUE)
