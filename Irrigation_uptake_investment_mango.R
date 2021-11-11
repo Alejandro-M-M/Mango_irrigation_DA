@@ -6,11 +6,27 @@ setwd("C:/Users/tito_/Dropbox/Thesis/R")
 
 .libPaths("C:/Users/tito_/Dropbox/Thesis/R/Library")
 
-# Library shit
+# Library 
 library(decisionSupport)
+
+# A function to let you test code line by line 
+make_variables <- function(est, n=1)
+  
+{ x <-random(rho=est, n=n)
+for(i in colnames(x)) assign(i, as.numeric(x[1,i]),envir=.GlobalEnv)}
+
+make_variables(estimate_read_csv("Input_table_uptake.csv"))
+
+prices_irrigation <- vv(var_mean = mango_price_irrigation, 
+                        var_CV = Var_CV,
+                        relative_trend = 2,
+                        n = 5)
+
+plot(prices_irrigation)
 
 # Input table
 income_estimates <- read.csv("Input_table_uptake.csv")
+
 
 # Function
 irrigation_function <- function(){
@@ -46,9 +62,9 @@ irrigation_function <- function(){
     investment_cost_waterpot*farm_size-(maintenance_waterpot*5)
   
   # Discount rate
-  NPV_no_irrigation <- discount(profit_no_irrigation, discount_rate = 10, calculate_NPV = TRUE)
-  NPV_well <- discount(profit_with_well, discount_rate = 10, calculate_NPV = TRUE)
-  NPV_waterpot <- discount(profit_with_waterpot, discount_rate = 10, calculate_NPV = TRUE)
+  NPV_no_irrigation <- discount(profit_no_irrigation, discount_rate = dis_rate, calculate_NPV = TRUE)
+  NPV_well <- discount(profit_with_well, discount_rate = dis_rate, calculate_NPV = TRUE)
+  NPV_waterpot <- discount(profit_with_waterpot, discount_rate = dis_rate, calculate_NPV = TRUE)
   
   # Overall NPV of the decision (do - don't do)
   NPV_decision_well <- NPV_well-NPV_no_irrigation

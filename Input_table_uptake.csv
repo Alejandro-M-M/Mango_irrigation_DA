@@ -17,3 +17,4 @@ Risk of not being able to sell the extra production of mangos,Risk of not sellin
 "Yield of mango trees when no irrigation is present, expressed in tons per hectare",Yield no irrigation,yield_no_irrigation,posnorm,3,,7
 Price of the energy for pumping water into the trees,Energy cost,energy_cost,posnorm,1,,2
 Cost of the pump to distribute water,Pump cost,pump_cost,posnorm,1,,2
+Discount rate,Discount rate,dis_rate,posnorm,8,,12
