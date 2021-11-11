@@ -4,7 +4,7 @@ Water that the orchard needs for irrigation in milimeters,Water for irrigation,w
 Lenght of the growing season in months,Lenght of the growing season,growing_season_months,posnorm,2,,5
 Rainwater present during the growing season,Rainwater during growing season,rainwaer_growing_season,posnorm,570,,725
 Investment cost to install a well,Investment cost - well,investment_cost_well,posnorm,50000,,200000
-Investment cost to install a waterpot,Investment cost - waterpot,investment_cost_waterpot,posnorm,100000,,400000
+Investment cost to install a waterpot,Investment cost - waterpot,investment_cost_waterpot,posnorm,200000,,300000
 Amount of water the waterpot can keep,Amount of water in waterpot,water_retention_waterpot,posnorm,200,,500
 Maintenance cost for the waterpot,Maintenance cost for the waterpot,maintenance_waterpot,posnorm,1000,,3000
 Maintenance cost for the well,Maintenance cost for the well,maintenance_well,posnorm,500,,2000
@@ -14,6 +14,6 @@ Variation thing,Variation thing,Var_CV,const,0.75,,0.75
 Risk of not being able to sell the extra production of mangos,Risk of not selling extra production,market_risk_sales,posnorm,0.1,,0.5
 "Cost of the hidrogeological study, in MXN, to asses the superficial soil layer and water availability ",Cost of hidrogeological study,study_cost_well,const,45000,,45000
 "Price of the mango when there is no irrigation, in MXN per ton",Mango price no irrigtion,mango_price_no_irrigation,posnorm,1500,,5000
-Yield of mango trees when no irrigation is present,Yield no irrigation,yield_no_irrigation,posnorm,3,,7
+"Yield of mango trees when no irrigation is present, expressed in tons per hectare",Yield no irrigation,yield_no_irrigation,posnorm,3,,7
 Price of the energy for pumping water into the trees,Energy cost,energy_cost,posnorm,1,,2
-lol,Pump cost,pump_cost,posnorm,1,,2
+Cost of the pump to distribute water,Pump cost,pump_cost,posnorm,1,,2

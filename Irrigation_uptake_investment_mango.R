@@ -38,11 +38,11 @@ irrigation_function <- function(){
   profit_no_irrigation <- prices_no_irrigation*yield_no_irrigation*farm_size
   
   # Profit with well
-  profit_with_well <- (prices_irrigation*yield_irrigation*farm_size*market_risk_sales)-
+  profit_with_well <- (prices_irrigation*yield_irrigation*farm_size)-
     investment_cost_well-study_cost_well-(maintenance_well*5)
   
   # Profit with water waterpot
-  profit_with_waterpot <- (prices_irrigation*yield_irrigation*farm_size*market_risk_sales)-
+  profit_with_waterpot <- (prices_irrigation*yield_irrigation*farm_size)-
     investment_cost_waterpot*farm_size-(maintenance_waterpot*5)
   
   # Discount rate
@@ -117,12 +117,12 @@ plot_pls(pls_result, input_table = income_estimates, threshold = 0)
 # choose this carefully and be sure to run the multi_EVPI only on the variables that the you want
 mcSimulation_table <- data.frame(irrigation_mc_simulation$x, irrigation_mc_simulation$y[1:3])
 
-evpi <- multi_EVPI(mc = mcSimulation_table, first_out_var = "NPV_irrigation")
+evpi <- multi_EVPI(mc = mcSimulation_table, first_out_var = "NPV_well")
 
 # We use the function plot_evpi() on the results from multi_EVPI() to plot the Expected 
 # Value of Perfect Information (EVPI). Here we show the results with the standard settings. 
 # The length of the bars is equal to EVPI.
-plot_evpi(evpi, decision_vars = "NPV_decision")
+plot_evpi(evpi, decision_vars = "NPV_decision_well")
 
 # Finally, we can use the compound_figure() function to provide a single figure for 
 # a quick assessment. The can be used to run the full decision assessment for a simple 
