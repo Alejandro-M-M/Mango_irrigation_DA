@@ -1,17 +1,19 @@
 description,label,variable,distribution,lower,median,upper
-Mango sale price for the farmers per tons in MXN,Mango sale price for farmers,mango_price_irrigation,posnorm,3000,,25000
+"Mango sale price for the farmers when irrigation is applied, in MXN per ton",Mango price when irrigated,mango_price_irrigation,posnorm,10000,,25000
 Water that the orchard needs for irrigation in milimeters,Water for irrigation,water_needed_irrigation,posnorm,300,,800
 Lenght of the growing season in months,Lenght of the growing season,growing_season_months,posnorm,2,,5
 Rainwater present during the growing season,Rainwater during growing season,rainwaer_growing_season,posnorm,570,,725
 Investment cost to install a well,Investment cost - well,investment_cost_well,posnorm,50000,,200000
-Investment cost to install a waterpot,Investment cost - waterpot,investment_cost_waterpot,posnorm,20000,,30000
+Investment cost to install a waterpot,Investment cost - waterpot,investment_cost_waterpot,posnorm,100000,,400000
 Amount of water the waterpot can keep,Amount of water in waterpot,water_retention_waterpot,posnorm,200,,500
-Maintenance cost for the waterpot,Maintenance cost for the waterpot,maintenance_waterpot_year,posnorm,2000,,5000
-Maintenance cost for the well,Maintenance cost for the well,maintenance_well_year,posnorm,1000,,5000
-Increase in yield when irrigated,Increase in yield when irrigated,yield_increase,posnorm,0.1,,0.5
+Maintenance cost for the waterpot,Maintenance cost for the waterpot,maintenance_waterpot,posnorm,1000,,3000
+Maintenance cost for the well,Maintenance cost for the well,maintenance_well,posnorm,500,,2000
+Increase in yield when irrigated,Increase in yield when irrigated,yield_increase,posnorm,0.2,,0.5
 Variation thing,Variation thing,Var_CV,const,0.75,,0.75
-"Mango yield when irrigated, expressed in tons/hectare",Mango yield irrigation,yield_irrigation,posnorm,7,,16
-Risk of not being able to sell the extra production of mangos,Risk of not selling extra production,market_risk_sales,posnorm,0.1,,1
+"Mango yield when irrigated, expressed in tons/hectare",Mango yield irrigation,yield_irrigation,posnorm,8,,16
+Risk of not being able to sell the extra production of mangos,Risk of not selling extra production,market_risk_sales,posnorm,0.1,,0.5
 "Cost of the hidrogeological study, in MXN, to asses the superficial soil layer and water availability ",Cost of hidrogeological study,study_cost_well,const,45000,,45000
 "Price of the mango when there is no irrigation, in MXN per ton",Mango price no irrigtion,mango_price_no_irrigation,posnorm,1500,,5000
 Yield of mango trees when no irrigation is present,Yield no irrigation,yield_no_irrigation,posnorm,3,,7
+Price of the energy for pumping water into the trees,Energy cost,energy_cost,posnorm,1,,2
+lol,Pump cost,pump_cost,posnorm,1,,2

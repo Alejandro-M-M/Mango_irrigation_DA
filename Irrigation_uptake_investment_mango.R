@@ -15,7 +15,7 @@ income_estimates <- read.csv("Input_table_uptake.csv")
 # Function
 irrigation_function <- function(){
   
-  farm_size <- 2
+  farm_size <- 4
   
   prices_irrigation <- vv(var_mean = mango_price_irrigation, 
                        var_CV = Var_CV,
@@ -37,23 +37,31 @@ irrigation_function <- function(){
   # Profit without irrigation
   profit_no_irrigation <- prices_no_irrigation*yield_no_irrigation*farm_size
   
-  # Profit with irrigation
-  profit_with_irrigation <- (prices_irrigation*yield_irrigation*farm_size*market_risk_sales)
-  -investment_cost_well-study_cost_well-(maintenance_waterpot_year*5)
+  # Profit with well
+  profit_with_well <- (prices_irrigation*yield_irrigation*farm_size*market_risk_sales)-
+    investment_cost_well-study_cost_well-(maintenance_well*5)
+  
+  # Profit with water waterpot
+  profit_with_waterpot <- (prices_irrigation*yield_irrigation*farm_size*market_risk_sales)-
+    investment_cost_waterpot*farm_size-(maintenance_waterpot*5)
   
   # Discount rate
   NPV_no_irrigation <- discount(profit_no_irrigation, discount_rate = 10, calculate_NPV = TRUE)
-  NPV_irrigation <- discount(profit_with_irrigation, discount_rate = 10, calculate_NPV = TRUE)
+  NPV_well <- discount(profit_with_well, discount_rate = 10, calculate_NPV = TRUE)
+  NPV_waterpot <- discount(profit_with_waterpot, discount_rate = 10, calculate_NPV = TRUE)
   
   # Overall NPV of the decision (do - don't do)
-  NPV_decision <- NPV_irrigation-NPV_no_irrigation
+  NPV_decision_well <- NPV_well-NPV_no_irrigation
+  NPV_decision_waterpot <- NPV_waterpot-NPV_no_irrigation
   
   return(list(NPV_no_irrigation =  NPV_no_irrigation,
-              NPV_irrigation =  NPV_irrigation, 
-              NPV_decision = NPV_irrigation - NPV_no_irrigation,
-              Cashflow_decision = profit_with_irrigation - profit_no_irrigation))
+              NPV_well =  NPV_well, 
+              NPV_waterpot = NPV_waterpot,
+              NPV_decision_well = NPV_well - NPV_no_irrigation,
+              NPV_decision_waterpot = NPV_waterpot - NPV_no_irrigation,
+              Cashflow_well = profit_with_well - profit_no_irrigation,
+              Cashflow_waterpot = profit_with_waterpot - profit_no_irrigation))
 }
-
 
 # Monte Carlo simulation using the model function
 irrigation_mc_simulation <- mcSimulation(estimate = as.estimate(income_estimates),
@@ -64,23 +72,38 @@ irrigation_mc_simulation <- mcSimulation(estimate = as.estimate(income_estimates
 # Results of a Monte Carlo simulation for estimating the comparative 
 # profits with and without irrigation
 plot_distributions(mcSimulation_object = irrigation_mc_simulation, 
-                   vars = c("NPV_no_irrigation", "NPV_irrigation"),
+                   vars = c("NPV_well", "NPV_waterpot", "NPV_no_irrigation"),
                    method = 'smooth_simple_overlay', 
                    base_size = 7)
 
 # Boxplots
 decisionSupport::plot_distributions(mcSimulation_object = irrigation_mc_simulation, 
-                                    vars = c("NPV_irrigation",
-                                             "NPV_no_irrigation"),
+                                    vars = c("NPV_well",
+                                             "NPV_no_irrigation",
+                                             "NPV_waterpot"),
                                     method = 'boxplot')
 
-# Value of the decision
+# Value of the decision for installing a well
 decisionSupport::plot_distributions(mcSimulation_object = irrigation_mc_simulation, 
-                                    vars = "NPV_decision",
+                                    vars = "NPV_decision_well", 
                                     method = 'boxplot_density')
 
-# Cashflowsimulation
-plot_cashflow(mcSimulation_object = irrigation_mc_simulation, cashflow_var_name = "Cashflow_decision")
+# Value of the decision for installing a waterpot
+decisionSupport::plot_distributions(mcSimulation_object = irrigation_mc_simulation, 
+                                    vars = "NPV_decision_waterpot",
+                                    method = 'boxplot_density')
+
+# Cashflow simulation well
+plot_cashflow(mcSimulation_object = irrigation_mc_simulation, cashflow_var_name = "Cashflow_well")
+
+# Cashflow simulation waterpot
+plot_cashflow(mcSimulation_object = irrigation_mc_simulation, cashflow_var_name = "Cashflow_waterpot")
+
+
+#######################################
+#######################################
+#######################################
+#######################################
 
 # Projection to Latent Structure Analysis
 pls_result <- plsr.mcSimulation(object = irrigation_mc_simulation,
@@ -121,3 +144,4 @@ evpi_irrigation <- multi_EVPI(mc = mcSimulation_table_irrigation,
 # Expected Value of Perfect Information (EVPI). Results with the standard settings. 
 # The length of the bars is equal to EVPI.
 plot_evpi(evpi_irrigation, decision_vars = "NPV_decision")
+
