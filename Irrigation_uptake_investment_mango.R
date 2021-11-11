@@ -2,24 +2,45 @@
 # Housekeeping
 rm(list = ls())
 
-setwd("C:/Users/tito_/Dropbox/Thesis/R") 
+# CW NOTE ####
+# no need for this when you use RStudio
+# setwd("C:/Users/tito_/Dropbox/Thesis/R") 
+# .libPaths("C:/Users/tito_/Dropbox/Thesis/R/Library")
 
-.libPaths("C:/Users/tito_/Dropbox/Thesis/R/Library")
-
+# CW NOTE ####
+# watch it, it is a good library
 # Library shit
 library(decisionSupport)
 
 # Input table
 income_estimates <- read.csv("Input_table_uptake.csv")
 
+# CW_Note ####
+#  a function to let you test code line by line
+make_variables<-function(est,n=1)
+{ x<-random(rho=est, n=n)
+for(i in colnames(x)) assign(i, as.numeric(x[1,i]),envir=.GlobalEnv)}
+
+make_variables(estimate_read_csv("Input_table_uptake.csv"))
+
+
 # Function
 irrigation_function <- function(){
   
+  # CW_Note ####
+  # use units
+  # use the input table and add some realistic uncertainty to this
   farm_size <- 4
   
+  # CW_Note ####
+  # these represent quite a huge difference in price
+  # is this realistic? 
   prices_irrigation <- vv(var_mean = mango_price_irrigation, 
                        var_CV = Var_CV,
                        relative_trend = 5,
+                       # CW_Note ####
+                       # this n is the years of the project
+                       # is this reasonable?
                        n = 5)
   
   
@@ -29,6 +50,8 @@ irrigation_function <- function(){
                           n = 5)
   
   # Risk of low rainfall
+  # # CW_Note ####
+  # in quotes this will not run
   "adjusted_yield_increase <- chance_event(chance = Residue_risk, 
                                                value_if = Active_export_per_year_containers_1MCP-2,
                                                value_if_not = Active_export_per_year_containers_1MCP,
@@ -46,6 +69,8 @@ irrigation_function <- function(){
     investment_cost_waterpot*farm_size-(maintenance_waterpot*5)
   
   # Discount rate
+  # # CW_Note ####
+  # You may want to add discount rate to the input table as well
   NPV_no_irrigation <- discount(profit_no_irrigation, discount_rate = 10, calculate_NPV = TRUE)
   NPV_well <- discount(profit_with_well, discount_rate = 10, calculate_NPV = TRUE)
   NPV_waterpot <- discount(profit_with_waterpot, discount_rate = 10, calculate_NPV = TRUE)
