@@ -1,14 +1,4 @@
 
-# Housekeeping
-rm(list = ls())
-
-setwd("C:/Users/tito_/Dropbox/Thesis/R") 
-
-.libPaths("C:/Users/tito_/Dropbox/Thesis/R/Library")
-
-# Library 
-library(decisionSupport)
-
 # A function to let you test code line by line 
 make_variables <- function(est, n=1)
   
@@ -23,6 +13,16 @@ prices_irrigation <- vv(var_mean = mango_price_irrigation,
                         n = 5)
 
 plot(prices_irrigation)
+
+# Housekeeping
+rm(list = ls())
+
+setwd("C:/Users/tito_/Dropbox/Thesis/R") 
+
+.libPaths("C:/Users/tito_/Dropbox/Thesis/R/Library")
+
+# Library 
+library(decisionSupport)
 
 # Input table
 income_estimates <- read.csv("Input_table_uptake.csv")
@@ -44,7 +44,7 @@ irrigation_function <- function(){
                           relative_trend = 5,
                           n = 5)
   
-  # Risk of low rainfall
+  # Risk of dry well
   "adjusted_yield_increase <- chance_event(chance = Residue_risk, 
                                                value_if = Active_export_per_year_containers_1MCP-2,
                                                value_if_not = Active_export_per_year_containers_1MCP,
@@ -99,65 +99,69 @@ decisionSupport::plot_distributions(mcSimulation_object = irrigation_mc_simulati
                                              "NPV_waterpot"),
                                     method = 'boxplot')
 
+### Well analysis
+
 # Value of the decision for installing a well
 decisionSupport::plot_distributions(mcSimulation_object = irrigation_mc_simulation, 
                                     vars = "NPV_decision_well", 
                                     method = 'boxplot_density')
 
-# Value of the decision for installing a waterpot
+# Cashflow simulation 
+plot_cashflow(mcSimulation_object = irrigation_mc_simulation, cashflow_var_name = "Cashflow_well")
+
+
+# Projection to Latent Structure Analysis 
+pls_result_well <- plsr.mcSimulation(object = irrigation_mc_simulation,
+                                resultName = names(irrigation_mc_simulation$y)[4], ncomp = 1)
+
+plot_pls(pls_result_well, input_table = income_estimates, threshold = 0, x_axis_name = 
+           "Variable Importance in Projection - Well investment")
+
+# Value of Information analysis
+
+mcSimulation_table <- data.frame(irrigation_mc_simulation$x, irrigation_mc_simulation$y[1:5])
+
+evpi <- multi_EVPI(mc = mcSimulation_table, first_out_var = "NPV_well")
+
+plot_evpi(evpi, decision_vars = "NPV_decision_well")
+
+# Compound figure 
+
+compound_figure(mcSimulation_object = irrigation_mc_simulation, 
+                input_table = income_estimates, plsrResults = pls_result_well, 
+                EVPIresults = evpi, decision_var_name = "NPV_decision_well", 
+                cashflow_var_name = "Cashflow_well", 
+                base_size = 7)
+
+### Rainwater capture analysis
+
+# Value of the decision for installing rain capture structures
 decisionSupport::plot_distributions(mcSimulation_object = irrigation_mc_simulation, 
                                     vars = "NPV_decision_waterpot",
                                     method = 'boxplot_density')
 
-# Cashflow simulation well
-plot_cashflow(mcSimulation_object = irrigation_mc_simulation, cashflow_var_name = "Cashflow_well")
-
-# Cashflow simulation waterpot
+# Cashflow simulation 
 plot_cashflow(mcSimulation_object = irrigation_mc_simulation, cashflow_var_name = "Cashflow_waterpot")
 
+# Projection to Latent Structure Analysis 
+pls_result_rain <- plsr.mcSimulation(object = irrigation_mc_simulation,
+                                     resultName = names(irrigation_mc_simulation$y)[5], ncomp = 1)
 
-#######################################
-#######################################
-#######################################
-#######################################
-
-# Projection to Latent Structure Analysis
-pls_result <- plsr.mcSimulation(object = irrigation_mc_simulation,
-                                resultName = names(irrigation_mc_simulation$y)[3], ncomp = 1)
-
-plot_pls(pls_result, input_table = income_estimates, threshold = 0)
+plot_pls(pls_result_rain, input_table = income_estimates, threshold = 0, x_axis_name = 
+           "Variable Importance in Projection - Rain capture investment")
 
 # Value of Information analysis
 
-# Here we subset the outputs from the mcSimulation function (y) by selecting the correct variables
-# choose this carefully and be sure to run the multi_EVPI only on the variables that the you want
-mcSimulation_table <- data.frame(irrigation_mc_simulation$x, irrigation_mc_simulation$y[1:3])
+mcSimulation_table <- data.frame(irrigation_mc_simulation$x, irrigation_mc_simulation$y[1:5])
 
-evpi <- multi_EVPI(mc = mcSimulation_table, first_out_var = "NPV_well")
+evpi <- multi_EVPI(mc = mcSimulation_table, first_out_var = "NPV_waterpot")
 
-# We use the function plot_evpi() on the results from multi_EVPI() to plot the Expected 
-# Value of Perfect Information (EVPI). Here we show the results with the standard settings. 
-# The length of the bars is equal to EVPI.
-plot_evpi(evpi, decision_vars = "NPV_decision_well")
+plot_evpi(evpi, decision_vars = "NPV_decision_waterpot")
 
-# Finally, we can use the compound_figure() function to provide a single figure for 
-# a quick assessment. The can be used to run the full decision assessment for a simple 
-# binary decision ('do' or 'do not do').
+# Compound figure 
 
 compound_figure(mcSimulation_object = irrigation_mc_simulation, 
-                input_table = income_estimates, plsrResults = pls_result, 
-                EVPIresults = evpi, decision_var_name = "NPV_decision", 
-                cashflow_var_name = "Cashflow_decision", 
+                input_table = income_estimates, plsrResults = pls_result_rain, 
+                EVPIresults = evpi, decision_var_name = "NPV_decision_waterpot", 
+                cashflow_var_name = "Cashflow_waterpot", 
                 base_size = 7)
-
-# Value of Information (VoI) analysis with the Expected Value of Perfect Information (EVPI). 
-mcSimulation_table_irrigation <- data.frame(irrigation_mc_simulation$x, 
-                                      irrigation_mc_simulation$y[3])
-
-evpi_irrigation <- multi_EVPI(mc = mcSimulation_table_irrigation, 
-                        first_out_var = "NPV_decision")
-
-# Expected Value of Perfect Information (EVPI). Results with the standard settings. 
-# The length of the bars is equal to EVPI.
-plot_evpi(evpi_irrigation, decision_vars = "NPV_decision")
-
