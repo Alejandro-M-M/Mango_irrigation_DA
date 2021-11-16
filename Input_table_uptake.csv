@@ -19,3 +19,4 @@ Price of the energy for pumping water into the trees,Energy cost,energy_cost,pos
 Cost of the pump to distribute water,Pump cost,pump_cost,posnorm,1,,2
 Discount rate,Discount rate,dis_rate,posnorm,8,,12
 Chance of not finding underground water for a well,Chance no underground water,chance_no_underwater,posnorm,0.02,,0.04
+Number of years for the analysis,Years,years,const,10,,10

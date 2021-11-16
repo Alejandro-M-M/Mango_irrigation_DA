@@ -16,18 +16,18 @@ income_estimates <- read.csv("Input_table_uptake.csv")
 # Function
 irrigation_function <- function(){
   
-  farm_size <- 4
+  farm_size <- 2
   
   prices_irrigation <- vv(var_mean = mango_price_irrigation, 
                        var_CV = Var_CV,
                        relative_trend = 5,
-                       n = 5)
+                       n = years)
   
   
   prices_no_irrigation <- vv(var_mean = mango_price_no_irrigation, 
                           var_CV = Var_CV,
                           relative_trend = 5,
-                          n = 5)
+                          n = years)
   
   # Profit without irrigation
   profit_no_irrigation <- prices_no_irrigation*yield_no_irrigation*farm_size
@@ -41,7 +41,7 @@ irrigation_function <- function(){
   profit_with_well <- chance_event(chance = chance_no_underwater, 
                                    value_if = profit_no_irrigation - study_cost_well,
                                    value_if_not = profit_well,
-                                   n = 5)
+                                   n = years)
   
   # Profit with raincatch
   profit_with_raincatch <- (prices_irrigation*yield_irrigation*farm_size)-
@@ -62,8 +62,8 @@ irrigation_function <- function(){
               NPV_raincatch = NPV_raincatch,
               NPV_decision_well = NPV_well - NPV_no_irrigation,
               NPV_decision_raincatch = NPV_raincatch - NPV_no_irrigation,
-              Cashflow_well = profit_with_well - profit_no_irrigation,
-              Cashflow_raincatch = profit_with_raincatch - profit_no_irrigation))
+              Cashflow_well = cumsum(profit_with_well - profit_no_irrigation),
+              Cashflow_raincatch = cumsum(profit_with_raincatch - profit_no_irrigation)))
 }
 
 # Monte Carlo simulation using the model function
