@@ -1,0 +1,4 @@
+,year_rain , yield_irrigation,mango_price_irrigation
+year_rain ,1,0.4,0.7
+ yield_irrigation,0.4,1,0
+mango_price_irrigation,0.7,0,1

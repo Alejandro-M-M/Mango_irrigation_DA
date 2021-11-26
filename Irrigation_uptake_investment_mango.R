@@ -13,12 +13,10 @@ library(ggplot2)
 # Input table
 income_estimates <- read.csv("Input_table_uptake.csv")
 
-
 # Function
 irrigation_function <- function(){
   
-  farm_size <- 2
-  
+  # Prices for the mango 
   prices_irrigation <- vv(var_mean = mango_price_irrigation, 
                        var_CV = Var_CV,
                        relative_trend = 5,
@@ -30,24 +28,29 @@ irrigation_function <- function(){
                           relative_trend = 5,
                           n = years)
   
+  #labor_cost <- for irrigation and harvesting. dependent of yield and farm size 
+  
   # Profit without irrigation
   profit_no_irrigation <- prices_no_irrigation*yield_no_irrigation*farm_size
   
 
   # Profit with well
-  profit_well <- prices_irrigation*yield_irrigation*farm_size-maintenance_well 
-  profit_well[1] <- profit_well[1] - (investment_cost_well+study_cost_well)
+  profit_with_well <- prices_irrigation*yield_irrigation*farm_size-maintenance_well 
+  profit_with_well[1] <- profit_with_well[1] - (investment_cost_well+study_cost_well)-
+    (cost_irrigation_system*farm_size)-infrastructure_cost 
   
-  # Risk of not finding underground water
-  profit_with_well <- chance_event(chance = chance_no_underwater, 
-                                   value_if = profit_no_irrigation - study_cost_well,
-                                   value_if_not = profit_well,
-                                   n = years)
+  # Risk of not finding underground water *****(Only for 1st year with consecutive results)
+  ## does this makes sense though?? ??? non repeatable risk...
+  #profit_with_well <- chance_event(chance = chance_no_underwater, 
+   #                                value_if = profit_no_irrigation - study_cost_well,
+    #                               value_if_not = profit_well,
+     #                              n = years)
   
   # Profit with raincatch
   profit_with_raincatch <- (prices_irrigation*yield_irrigation*farm_size)-
     maintenance_raincatch
-  profit_with_raincatch[1] <- profit_with_raincatch[1] - investment_cost_raincatch*farm_size
+  profit_with_raincatch[1] <- profit_with_raincatch[1] - investment_cost_raincatch*farm_size-
+    (cost_irrigation_system*farm_size)-infrastructure_cost
   
   # Discount rate
   NPV_no_irrigation <- discount(profit_no_irrigation, discount_rate = dis_rate, calculate_NPV = TRUE)
@@ -63,22 +66,37 @@ irrigation_function <- function(){
               NPV_raincatch = NPV_raincatch,
               NPV_decision_well = NPV_well - NPV_no_irrigation,
               NPV_decision_raincatch = NPV_raincatch - NPV_no_irrigation,
-              Cashflow_well = append(0, cumsum(profit_with_well - profit_no_irrigation)),
-              Cashflow_raincatch = profit_no_irrigation))
+              Cashflow_well = cumsum(profit_with_well - profit_no_irrigation),
+              Cashflow_raincatch = cumsum(profit_with_raincatch - profit_no_irrigation)))
 }
 
+# Correlation matrix for rain. yield and price
+correlation_matrix <- "         ,                   year_rain, yield_irrigation, mango_price_irrigation, rain_gs, yield_no_irrigation, mango_price_no_irrigation
+                          year_rain,                    1,           0.4,                 0.7,              0,          0,                      0
+                          yield_irrigation,             0.4,         1,                   0,                0,          0,                      0
+                          mango_price_irrigation,       0.7,         0,                   1,                0,          0,                      0 
+                          rain_gs,                      0,           0,                   0,                1,          0.6,                    0.8
+                          yield_no_irrigation,          0,           0,                   0,                0.6,        1,                      0
+                          mango_price_no_irrigation,    0,           0,                   0,                0.8,        0,                      1 "
+
 # Monte Carlo simulation using the model function
-irrigation_mc_simulation <- mcSimulation(estimate = as.estimate(income_estimates),
-                                  model_function = irrigation_function,
-                                  numberOfModelRuns = 1000,
-                                  functionSyntax = "plainNames")
+irrigation_mc_simulation <- mcSimulation(estimate = as.estimate(income_estimates, 
+                                         correlation_matrix=data.matrix(read.csv(text = correlation_matrix, 
+                                             row.names=1,
+                                             strip.white=TRUE))),
+                                         model_function = irrigation_function,
+                                         numberOfModelRuns = 1000,
+                                         functionSyntax = "plainNames")
 
 # Results of a Monte Carlo simulation for estimating the comparative 
 # profits with and without irrigation
 plot_distributions(mcSimulation_object = irrigation_mc_simulation, 
                    vars = c("NPV_well", "NPV_raincatch", "NPV_no_irrigation"),
                    method = 'smooth_simple_overlay', 
-                   base_size = 7)
+                   base_size = 7)+
+                   xlim(-3000000, 25000000)+
+                   geom_vline(aes(xintercept = 0))
+                   
 
 # Boxplots
 decisionSupport::plot_distributions(mcSimulation_object = irrigation_mc_simulation, 
@@ -92,7 +110,10 @@ decisionSupport::plot_distributions(mcSimulation_object = irrigation_mc_simulati
 # Value of the decision for installing a well
 decisionSupport::plot_distributions(mcSimulation_object = irrigation_mc_simulation, 
                                     vars = "NPV_decision_well", 
-                                    method = 'boxplot_density')
+                                    method = 'boxplot_density')+
+                                    xlim(-3000000, 25000000)+
+                                    geom_vline(aes(xintercept = 0))+
+                                    geom_hline(aes(yintercept = 0))
 
 # Cashflow simulation 
 plot_cashflow(mcSimulation_object = irrigation_mc_simulation, cashflow_var_name = "Cashflow_well",
@@ -128,7 +149,11 @@ compound_figure(mcSimulation_object = irrigation_mc_simulation,
 # Value of the decision for installing rain capture structures
 decisionSupport::plot_distributions(mcSimulation_object = irrigation_mc_simulation, 
                                     vars = "NPV_decision_raincatch",
-                                    method = 'boxplot_density')
+                                    method = 'boxplot_density')+
+                                    xlim(-3000000, 25000000)+
+                                    geom_vline(aes(xintercept = 0))+
+                                    geom_hline(aes(yintercept = 0))
+                                      
 
 # Cashflow simulation 
 plot_cashflow(mcSimulation_object = irrigation_mc_simulation, cashflow_var_name = "Cashflow_raincatch")+

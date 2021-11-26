@@ -88,14 +88,47 @@ profit_with_well <- chance_event(chance = chance_no_underwater,
 profit_with_raincatch <- (prices_irrigation*yield_irrigation*farm_size)-
   maintenance_raincatch
 profit_with_raincatch[1] <- profit_with_raincatch[1] - investment_cost_raincatch*farm_size
-return (Cashflow_well = cumsum(profit_with_well - profit_no_irrigation))
+return (list(yield_irrigation = yield_irrigation,
+             year_rain = year_rain))
 
 }
 
-irrigation_mc_simulation <- mcSimulation(estimate = as.estimate(income_estimates),
+
+
+
+correlation_matrix <- "         ,                   year_rain, yield_irrigation, mango_price_irrigation, rain_gs, yield_no_irrigation, mango_price_no_irrigation
+                          year_rain,                    1,           0.4,                 0.7,              0,          0,                      0
+                          yield_irrigation,             0.4,         1,                   0,                0,          0,                      0
+                          mango_price_irrigation,       0.7,         0,                   1,                0,          0,                      0 
+                          rain_gs,                      0,           0,                   0,                1,          0.6,                    0.8
+                          yield_no_irrigation,          0,           0,                   0,                0.6,        1,                      0
+                          mango_price_no_irrigation,    0,           0,                   0,                0.8,        0,                      1 "
+
+
+                          
+
+irrigation_mc_simulation <- mcSimulation(estimate = as.estimate(income_estimates, 
+                                         correlation_matrix=data.matrix(read.csv(text = correlation_matrix, 
+                                            row.names=1,
+                                            strip.white=TRUE))),
                                          model_function = irrigation_function,
                                          numberOfModelRuns = 1000,
                                          functionSyntax = "plainNames")
+
+
+
+plot_distributions(mcSimulation_object = irrigation_mc_simulation, 
+                   vars = c("yield_irrigation"),
+                   method = 'smooth_simple_overlay', 
+                   base_size = 7)
+
+plot_distributions(mcSimulation_object = irrigation_mc_simulation, 
+                   vars = c("year_rain"),
+                   method = 'smooth_simple_overlay', 
+                   base_size = 7)
+
+print(corMat(c(irrigation_mc_simulation, )))
+irrigation_function()
 
 
 plot_cashflow(mcSimulation_object = irrigation_mc_simulation, cashflow_var_name = "output_1")
