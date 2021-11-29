@@ -189,12 +189,16 @@ plot_distributions(mcSimulation_object = dice_mc_simulation,
 
 
 
-flor <- vv(var_mean = 12, 
-                     var_CV = 20,
-                     relative_trend = 0,
-                     n = 2)
+flor <- vv(var_mean = 7, 
+                     var_CV = 1,
+                     relative_trend = 7,
+                     n = 40)
+
+plot(flor)
 sd(flor)
 hist(flor, breaks = 50)
+
+rnorm(40, 7, 1)
 
 
 

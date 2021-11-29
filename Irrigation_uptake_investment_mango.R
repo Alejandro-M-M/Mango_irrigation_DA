@@ -16,16 +16,22 @@ income_estimates <- read.csv("Input_table_uptake.csv")
 # Function
 irrigation_function <- function(){
   
-  # Prices for the mango 
+  # Prices for the mango. The relative trend and the variable coefficient were 
+  # calculated with data from SIACON since 2009. Relative trend was calculated
+  # by getting the average of the individual relative trend between years. Var_CV
+  # was obtained by calculating the standard deviation of the prices, having the 
+  # mean of the values given by the function with the relative trend. 
+  # File → Precio_mango_Guerrero_1980_2019.xlsx
+  
   prices_irrigation <- vv(var_mean = mango_price_irrigation, 
                        var_CV = Var_CV,
-                       relative_trend = 5,
+                       relative_trend = 6.41,
                        n = years)
   
   
   prices_no_irrigation <- vv(var_mean = mango_price_no_irrigation, 
                           var_CV = Var_CV,
-                          relative_trend = 5,
+                          relative_trend = 6.41,
                           n = years)
   
   #labor_cost <- for irrigation and harvesting. dependent of yield and farm size 
