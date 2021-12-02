@@ -40,9 +40,17 @@ irrigation_function <- function(){
   profit_no_irrigation <- prices_no_irrigation*yield_no_irrigation*farm_size
   
 
-  # Profit with well
-  profit_with_well <- prices_irrigation*yield_irrigation*farm_size-maintenance_well 
-  profit_with_well[1] <- profit_with_well[1] - (investment_cost_well+study_cost_well)-
+  # Profit with well. Here, as well as with raincatch, an investment for an irrigation
+  # system was considered. Also infrastructure cost for a storehouse. The investments
+  # were fixed to the first value of the profit vector. For the specific case of the
+  # deep well, a preliminary study cost is added, to asses the location of the aquifer 
+  # and the requirements for the excavation. More than one well may be needed to supply
+  # the field
+  
+  well_supply <- ceiling(farm_size/well_water)
+  
+  profit_with_well <- prices_irrigation*yield_irrigation*farm_size*water_quality-maintenance_well 
+  profit_with_well[1] <- profit_with_well[1] - (investment_cost_well*well_supply+study_cost_well)-
     (cost_irrigation_system*farm_size)-infrastructure_cost 
   
   # Risk of not finding underground water *****(Only for 1st year with consecutive results)
@@ -58,10 +66,15 @@ irrigation_function <- function(){
   profit_with_raincatch[1] <- profit_with_raincatch[1] - investment_cost_raincatch*farm_size-
     (cost_irrigation_system*farm_size)-infrastructure_cost
   
+  # Profit with precise irrigation
+  profit_precise_irrigation <- prices_irrigation*yield_irrigation*farm_size*yield_increase
+    profit_precise_irrigation[1] <- profit_precise_irrigation[1] - cost_precise_irri
+  
   # Discount rate
   NPV_no_irrigation <- discount(profit_no_irrigation, discount_rate = dis_rate, calculate_NPV = TRUE)
   NPV_well <- discount(profit_with_well, discount_rate = dis_rate, calculate_NPV = TRUE)
   NPV_raincatch <- discount(profit_with_raincatch, discount_rate = dis_rate, calculate_NPV = TRUE)
+  NPV_precise_irrigation <- discount(profit_precise_irrigation, discount_rate = dis_rate, calculate_NPV = TRUE)
   
   # Overall NPV of the decision (do - don't do)
   NPV_decision_well <- NPV_well-NPV_no_irrigation
@@ -73,7 +86,8 @@ irrigation_function <- function(){
               NPV_decision_well = NPV_well - NPV_no_irrigation,
               NPV_decision_raincatch = NPV_raincatch - NPV_no_irrigation,
               Cashflow_well = cumsum(profit_with_well - profit_no_irrigation),
-              Cashflow_raincatch = cumsum(profit_with_raincatch - profit_no_irrigation)))
+              Cashflow_raincatch = cumsum(profit_with_raincatch - profit_no_irrigation),
+              Cashflow_precise_irrigation = append(0,cumsum(profit_precise_irrigation))))
 }
 
 # Correlation matrix for rain. yield and price
@@ -158,7 +172,8 @@ decisionSupport::plot_distributions(mcSimulation_object = irrigation_mc_simulati
                                     method = 'boxplot_density')+
                                     xlim(-3000000, 25000000)+
                                     geom_vline(aes(xintercept = 0))+
-                                    geom_hline(aes(yintercept = 0))
+                                    geom_hline(aes(yintercept = 0))+
+                                    
                                       
 
 # Cashflow simulation 
@@ -187,3 +202,7 @@ compound_figure(mcSimulation_object = irrigation_mc_simulation,
                 EVPIresults = evpi_rainwater, decision_var_name = "NPV_decision_raincatch", 
                 cashflow_var_name = "Cashflow_raincatch", 
                 base_size = 7)
+
+# Cashflow of investing in precise irrigation 
+plot_cashflow(mcSimulation_object = irrigation_mc_simulation, cashflow_var_name = "Cashflow_precise_irrigation")+
+  scale_x_continuous(breaks = c("1":"11"))

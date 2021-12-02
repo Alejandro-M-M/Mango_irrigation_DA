@@ -21,6 +21,16 @@ for(i in colnames(x)) assign(i, as.numeric(x[1,i]),envir=.GlobalEnv)}
 
 make_variables(estimate_read_csv("Input_table_uptake.csv"))
 
+prices_irrigation <- vv(var_mean = mango_price_irrigation, 
+                        var_CV = Var_CV,
+                        relative_trend = 5,
+                        n = years)
+
+profit_precise_irrigation <- prices_irrigation*yield_irrigation*farm_size*yield_increase
+profit_precise_irrigation[1] <- profit_precise_irrigation[1] - cost_precise_irri
+
+flor <- cumsum(profit_precise_irrigation)
+
 ################################################################################
 test_function <- function(){
   yield_as_rain <- 11+((year_rain-500)/(1500-500))*(13-11)
@@ -30,9 +40,11 @@ test_function <- function(){
                        n = 1)
   aardvark <- rnorm(1, yield_as_rain, 0.6137)
   
+  lolia <- well_water
+  
   return(list(yield_as_rain = yield_as_rain,
               yield_rain_var = yield_rain_var,
-              aardvark = aardvark))
+              lolia = lolia))
 }
   
 test_mc_simulation <- mcSimulation(estimate = as.estimate(income_estimates),
@@ -41,7 +53,7 @@ test_mc_simulation <- mcSimulation(estimate = as.estimate(income_estimates),
                                          functionSyntax = "plainNames")
 
 plot_distributions(mcSimulation_object = test_mc_simulation, 
-                   vars = c("yield_as_rain", "yield_irrigation", "aardvark"),
+                   vars = c("lolia"),
                    method = 'smooth_simple_overlay', 
                    base_size = 7)
 
@@ -57,7 +69,6 @@ str(test_mc_simulation)
 ################################################################################
 irrigation_function <- function(){
   
-farm_size <- 2
 
 prices_irrigation <- vv(var_mean = mango_price_irrigation, 
                         var_CV = Var_CV,
@@ -75,25 +86,30 @@ profit_no_irrigation <- prices_no_irrigation*yield_no_irrigation*farm_size
   
 
 # Profit with well
-profit_well <- prices_irrigation*yield_irrigation*farm_size-maintenance_well 
-profit_well[1] <- profit_well[1] - (investment_cost_well+study_cost_well)
+
+well_supply <- ceiling(farm_size/well_water)
+
+profit_with_well <- prices_irrigation*yield_irrigation*farm_size*water_quality-maintenance_well 
+profit_with_well[1] <- profit_with_well[1] - (investment_cost_well*well_supply+study_cost_well)-
+  (cost_irrigation_system*farm_size)-infrastructure_cost
 
 # Risk of not finding underground water
-profit_with_well <- chance_event(chance = chance_no_underwater, 
-                                 value_if = profit_no_irrigation - study_cost_well,
-                                 value_if_not = profit_well,
-                                 n = years)
+#profit_with_well <- chance_event(chance = chance_no_underwater, 
+ #                                value_if = profit_no_irrigation - study_cost_well,
+  #                               value_if_not = profit_well,
+   #                              n = years)
 
 # Profit with raincatch
 profit_with_raincatch <- (prices_irrigation*yield_irrigation*farm_size)-
   maintenance_raincatch
 profit_with_raincatch[1] <- profit_with_raincatch[1] - investment_cost_raincatch*farm_size
 return (list(yield_irrigation = yield_irrigation,
-             year_rain = year_rain))
+             prices_irrigation = prices_irrigation,
+             profit_with_well = profit_with_well))
 
 }
 
-
+irrigation_function()
 
 
 correlation_matrix <- "         ,                   year_rain, yield_irrigation, mango_price_irrigation, rain_gs, yield_no_irrigation, mango_price_no_irrigation
@@ -199,7 +215,6 @@ sd(flor)
 hist(flor, breaks = 50)
 
 rnorm(40, 7, 1)
-
 
 
 
