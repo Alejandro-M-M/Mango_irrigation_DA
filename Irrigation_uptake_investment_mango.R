@@ -13,7 +13,7 @@ library(ggplot2)
 # Input table
 income_estimates <- read.csv("Input_table_uptake.csv")
 
-# Function
+# Function (chance no underground + risk not selling extra)
 irrigation_function <- function(){
   
   # Prices for the mango. The relative trend and the variable coefficient were 
@@ -25,16 +25,16 @@ irrigation_function <- function(){
   
   prices_irrigation <- vv(var_mean = mango_price_irrigation, 
                        var_CV = Var_CV,
-                       relative_trend = 6.41,
+                       relative_trend = trend,
                        n = years)
   
   
   prices_no_irrigation <- vv(var_mean = mango_price_no_irrigation, 
                           var_CV = Var_CV,
-                          relative_trend = 6.41,
+                          relative_trend = trend,
                           n = years)
   
-  #labor_cost <- for irrigation and harvesting. dependent of yield and farm size 
+  labor_cost <- yield_irrigation*farm_size*500 
   
   # Profit without irrigation
   profit_no_irrigation <- prices_no_irrigation*yield_no_irrigation*farm_size
@@ -49,7 +49,7 @@ irrigation_function <- function(){
   
   well_supply <- ceiling(farm_size/well_water)
   
-  profit_with_well <- prices_irrigation*yield_irrigation*farm_size*water_quality-maintenance_well 
+  profit_with_well <- prices_irrigation*yield_irrigation*farm_size*water_quality+labor_cost-maintenance_well 
   profit_with_well[1] <- profit_with_well[1] - (investment_cost_well*well_supply+study_cost_well)-
     (cost_irrigation_system*farm_size)-infrastructure_cost 
   
@@ -60,11 +60,13 @@ irrigation_function <- function(){
     #                               value_if_not = profit_well,
      #                              n = years)
   
-  # Profit with raincatch
-  profit_with_raincatch <- (prices_irrigation*yield_irrigation*farm_size)-
+  # Profit with raincatch. The reduction of the farm for the raincatch area must be considered
+  # An area of 30x30 m is considered, reducing the farm size by 9%. Log2 is used on farm size 
+  # because expenses are reduced while escalating raincatch size (needs adjustment).  
+  profit_with_raincatch <- (prices_irrigation*yield_irrigation*farm_size*0.91)+labor_cost-
     maintenance_raincatch
-  profit_with_raincatch[1] <- profit_with_raincatch[1] - investment_cost_raincatch*farm_size-
-    (cost_irrigation_system*farm_size)-infrastructure_cost
+  profit_with_raincatch[1] <- profit_with_raincatch[1] - investment_cost_raincatch*log2(farm_size)-
+    (cost_irrigation_system*farm_size*0.91)-infrastructure_cost
   
   # Profit with precise irrigation
   profit_precise_irrigation <- prices_irrigation*yield_irrigation*farm_size*yield_increase
@@ -85,9 +87,10 @@ irrigation_function <- function(){
               NPV_raincatch = NPV_raincatch,
               NPV_decision_well = NPV_well - NPV_no_irrigation,
               NPV_decision_raincatch = NPV_raincatch - NPV_no_irrigation,
+              NPV_rain_vs_well = NPV_raincatch - NPV_well,
               Cashflow_well = cumsum(profit_with_well - profit_no_irrigation),
               Cashflow_raincatch = cumsum(profit_with_raincatch - profit_no_irrigation),
-              Cashflow_precise_irrigation = append(0,cumsum(profit_precise_irrigation))))
+              Cashflow_precise_irrigation = cumsum(profit_precise_irrigation)))
 }
 
 # Correlation matrix for rain. yield and price
@@ -117,92 +120,48 @@ plot_distributions(mcSimulation_object = irrigation_mc_simulation,
                    xlim(-3000000, 25000000)+
                    geom_vline(aes(xintercept = 0))
                    
-
-# Boxplots
-decisionSupport::plot_distributions(mcSimulation_object = irrigation_mc_simulation, 
-                                    vars = c("NPV_well",
-                                             "NPV_no_irrigation",
-                                             "NPV_raincatch"),
-                                    method = 'boxplot')
-
-### Well analysis
-
-# Value of the decision for installing a well
-decisionSupport::plot_distributions(mcSimulation_object = irrigation_mc_simulation, 
-                                    vars = "NPV_decision_well", 
-                                    method = 'boxplot_density')+
-                                    xlim(-3000000, 25000000)+
-                                    geom_vline(aes(xintercept = 0))+
-                                    geom_hline(aes(yintercept = 0))
-
-# Cashflow simulation 
+# Cashflow simulation for a well
 plot_cashflow(mcSimulation_object = irrigation_mc_simulation, cashflow_var_name = "Cashflow_well",
-  color_25_75 = "dodgerblue4", color_5_95 = "dodgerblue3", color_median = "red")+
+              color_25_75 = "dodgerblue4", color_5_95 = "dodgerblue3", color_median = "red")+
   scale_x_continuous(labels = c("0":"10"), breaks = c("0":"10"))
-              
 
-# Projection to Latent Structure Analysis 
-pls_result_well <- plsr.mcSimulation(object = irrigation_mc_simulation,
-                                resultName = names(irrigation_mc_simulation$y)[4], ncomp = 1)
-
-plot_pls(pls_result_well, input_table = income_estimates, threshold = 0, x_axis_name = 
-           "Variable Importance in Projection - Well investment")
-
-# Value of Information analysis
-
-mcSimulation_table_well <- data.frame(irrigation_mc_simulation$x, irrigation_mc_simulation$y[c(1,2,4)])
-
-evpi_well <- multi_EVPI(mc = mcSimulation_table_well, first_out_var = "NPV_no_irrigation")
-
-plot_evpi(evpi_well, decision_vars = "NPV_decision_well")
-
-# Compound figure 
-
-compound_figure(mcSimulation_object = irrigation_mc_simulation, 
-                input_table = income_estimates, plsrResults = pls_result_well, 
-                EVPIresults = evpi_well, decision_var_name = "NPV_decision_well", 
-                cashflow_var_name = "Cashflow_well", 
-                base_size = 7)
-
-### Rainwater capture analysis
-
-# Value of the decision for installing rain capture structures
-decisionSupport::plot_distributions(mcSimulation_object = irrigation_mc_simulation, 
-                                    vars = "NPV_decision_raincatch",
-                                    method = 'boxplot_density')+
-                                    xlim(-3000000, 25000000)+
-                                    geom_vline(aes(xintercept = 0))+
-                                    geom_hline(aes(yintercept = 0))+
-                                    
-                                      
-
-# Cashflow simulation 
+# Cashflow simulation for rainwater
 plot_cashflow(mcSimulation_object = irrigation_mc_simulation, cashflow_var_name = "Cashflow_raincatch")+
   scale_x_continuous(breaks = c("1":"10"))
 
-# Projection to Latent Structure Analysis 
-pls_result_rain <- plsr.mcSimulation(object = irrigation_mc_simulation,
-                                     resultName = names(irrigation_mc_simulation$y)[5], ncomp = 1)
+# Raincatch decision over well
+decisionSupport::plot_distributions(mcSimulation_object = irrigation_mc_simulation, 
+                                    vars = "NPV_rain_vs_well", 
+                                    method = 'boxplot_density')+
+  xlim(-8000000, 2500000)+
+  geom_vline(aes(xintercept = 0))+
+  geom_hline(aes(yintercept = 0))
 
-plot_pls(pls_result_rain, input_table = income_estimates, threshold = 0, x_axis_name = 
-           "Variable Importance in Projection - Rain capture investment")
+# Projection to Latent Structure Analysis for raincatch vs well
+pls_result_well <- plsr.mcSimulation(object = irrigation_mc_simulation,
+                                     resultName = names(irrigation_mc_simulation$y)[6], ncomp = 1)
+
+plot_pls(pls_result_well, input_table = income_estimates, threshold = 0, x_axis_name = 
+           "Variable Importance in Projection - Raincatch vs well")
 
 # Value of Information analysis
+mcSimulation_table <- data.frame(irrigation_mc_simulation$x, irrigation_mc_simulation$y[c(2,3,6)])
 
-mcSimulation_table_rainwater <- data.frame(irrigation_mc_simulation$x, irrigation_mc_simulation$y[c(1,3,5)])
+evpi <- multi_EVPI(mc = mcSimulation_table, first_out_var = "NPV_well")
 
-evpi_rainwater <- multi_EVPI(mc = mcSimulation_table_rainwater, first_out_var = "NPV_no_irrigation")
+plot_evpi(evpi, decision_vars = "NPV_rain_vs_well")
 
-plot_evpi(evpi_rainwater, decision_vars = "NPV_decision_raincatch")
-
-# Compound figure 
-
-compound_figure(mcSimulation_object = irrigation_mc_simulation, 
-                input_table = income_estimates, plsrResults = pls_result_rain, 
-                EVPIresults = evpi_rainwater, decision_var_name = "NPV_decision_raincatch", 
-                cashflow_var_name = "Cashflow_raincatch", 
-                base_size = 7)
 
 # Cashflow of investing in precise irrigation 
 plot_cashflow(mcSimulation_object = irrigation_mc_simulation, cashflow_var_name = "Cashflow_precise_irrigation")+
   scale_x_continuous(breaks = c("1":"11"))
+
+
+
+hola <- "hola"
+
+adios <- "caca"
+
+hola <- as.text(hola) + "hello"
+
+rbind(hola, adios)

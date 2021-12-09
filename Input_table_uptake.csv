@@ -1,8 +1,6 @@
 description,label,variable,distribution,lower,median,upper
 "Mango sale price for the farmers when irrigation is applied, in MXN per ton",Mango price when irrigated,mango_price_irrigation,norm,8500,,16000
 "Price of the mango when there is no irrigation, in MXN per ton",Mango price no irrigtion,mango_price_no_irrigation,norm,2500,,5000
-Water that the orchard needs for irrigation in milimeters,Water for irrigation,water_needed_irrigation,posnorm,300,,800
-Lenght of the growing season in months,Lenght of the growing season,growing_season_months,posnorm,2,,5
 "Rainwater during the year, in mm",Yearly rain,year_rain,norm,500,,1500
 "Rainwater present during the growing season, in mm",Rainwater during growing season,rain_gs,norm,100,,300
 Cost of the irrigation system most recommended and commonly used in the area,Cost of micro-sprinklers,cost_irrigation_system,posnorm,50000,,75000
@@ -10,20 +8,17 @@ Cost of building new infrastructure for the storage and transport of extra produ
 Investment cost for precise irrigation,Investment cost - precise irrigation,cost_precise_irri,posnorm,100000,,500000
 Investment cost to install a well,Investment cost - well,investment_cost_well,posnorm,100000,,250000
 Investment cost to install a raincatch,Investment cost - raincatch,investment_cost_raincatch,posnorm,200000,,350000
-Amount of water the raincatch can keep,Amount of water in raincatch,water_retention_raincatch,posnorm,2000,,3000
 Maintenance cost for the raincatch,Maintenance cost for the raincatch,maintenance_raincatch,posnorm,1000,,3000
 Maintenance cost for the well,Maintenance cost for the well,maintenance_well,posnorm,500,,2000
 Increase in yield when precise irrigation is applied,Increase in yield precise irrigation,yield_increase,tnorm_0_1,0.03,,0.1
-Variation thing,Variation thing,Var_CV,const,9.5,,9.5
+Variation thing,Variation thing,Var_CV,norm,8,,11
 "Mango yield when irrigated, expressed in tons/hectare",Mango yield irrigation,yield_irrigation,norm,8,,16
 "Yield of mango trees when no irrigation is present, expressed in tons per hectare",Yield no irrigation,yield_no_irrigation,norm,5,,8
-Risk of not being able to sell the extra production of mangos,Risk of not selling extra production,market_risk_sales,posnorm,0.1,,0.5
 "Cost of the hidrogeological study, in MXN, to asses the superficial soil layer and water availability ",Cost of hidrogeological study,study_cost_well,const,45000,,45000
 Price of the energy for pumping water into the trees,Energy cost,energy_cost,posnorm,1,,2
-Cost of the pump to distribute water,Pump cost,pump_cost,posnorm,1,,2
 Discount rate,Discount rate,dis_rate,posnorm,8,,12
-Chance of not finding underground water for a well,Chance no underground water,chance_no_underwater,posnorm,0.3,,0.4
 Number of years for the analysis,Years,years,const,10,,10
 Farm size in ha,Farm size,farm_size,posnorm,1,,15
 "Water quality found on the well. Affected by salinization, and having a negative impact on yield",Water quality,water_quality,posnorm,0.85,,1
 Number of hectares that can be irrigated by the well,Well water,well_water,posnorm,3,,15
+Relative trend of mango price over time,Relative trend,trend,posnorm,6,,7

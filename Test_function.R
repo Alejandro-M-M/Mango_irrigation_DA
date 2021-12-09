@@ -21,15 +21,53 @@ for(i in colnames(x)) assign(i, as.numeric(x[1,i]),envir=.GlobalEnv)}
 
 make_variables(estimate_read_csv("Input_table_uptake.csv"))
 
+
+################################################################################
+x
+if (farm_size > 0 & farm_size < 3) {invest_raincatch <- investment_cost_raincatch*farm_size
+  } else x <- 5
+
+################################################################################
+
+
+labor_cost <- yield_irrigation*farm_size*500
+
+
 prices_irrigation <- vv(var_mean = mango_price_irrigation, 
                         var_CV = Var_CV,
                         relative_trend = 5,
                         n = years)
 
-profit_precise_irrigation <- prices_irrigation*yield_irrigation*farm_size*yield_increase
-profit_precise_irrigation[1] <- profit_precise_irrigation[1] - cost_precise_irri
+prices_no_irrigation <- vv(var_mean = mango_price_no_irrigation, 
+                           var_CV = Var_CV,
+                           relative_trend = 5,
+                           n = years)
 
-flor <- cumsum(profit_precise_irrigation)
+
+# Profit without irrigation
+profit_no_irrigation <- prices_no_irrigation*yield_no_irrigation*farm_size
+
+
+# Profit with well
+
+well_supply <- ceiling(farm_size/well_water)
+
+profit_with_well <- prices_irrigation*yield_irrigation*farm_size*water_quality+labor_cost-maintenance_well 
+profit_with_well[1] <- profit_with_well[1] - (investment_cost_well*well_supply+study_cost_well)-
+  (cost_irrigation_system*farm_size)-infrastructure_cost 
+
+# Risk of not finding underground water *****(Only for 1st year with consecutive results)
+## does this makes sense though?? ??? non repeatable risk...
+#profit_with_well <- chance_event(chance = chance_no_underwater, 
+#                                value_if = profit_no_irrigation - study_cost_well,
+#                               value_if_not = profit_well,
+#                              n = years)
+
+# Profit with raincatch
+profit_with_raincatch <- (prices_irrigation*yield_irrigation*farm_size)+labor_cost-
+  maintenance_raincatch
+profit_with_raincatch[1] <- profit_with_raincatch[1] - investment_cost_raincatch*farm_size-
+  (cost_irrigation_system*farm_size)-infrastructure_cost
 
 ################################################################################
 test_function <- function(){
@@ -89,20 +127,23 @@ profit_no_irrigation <- prices_no_irrigation*yield_no_irrigation*farm_size
 
 well_supply <- ceiling(farm_size/well_water)
 
-profit_with_well <- prices_irrigation*yield_irrigation*farm_size*water_quality-maintenance_well 
+profit_with_well <- prices_irrigation*yield_irrigation*farm_size*water_quality+labor_cost-maintenance_well 
 profit_with_well[1] <- profit_with_well[1] - (investment_cost_well*well_supply+study_cost_well)-
-  (cost_irrigation_system*farm_size)-infrastructure_cost
+  (cost_irrigation_system*farm_size)-infrastructure_cost 
 
-# Risk of not finding underground water
+# Risk of not finding underground water *****(Only for 1st year with consecutive results)
+## does this makes sense though?? ??? non repeatable risk...
 #profit_with_well <- chance_event(chance = chance_no_underwater, 
- #                                value_if = profit_no_irrigation - study_cost_well,
-  #                               value_if_not = profit_well,
-   #                              n = years)
+#                                value_if = profit_no_irrigation - study_cost_well,
+#                               value_if_not = profit_well,
+#                              n = years)
 
 # Profit with raincatch
-profit_with_raincatch <- (prices_irrigation*yield_irrigation*farm_size)-
+profit_with_raincatch <- (prices_irrigation*yield_irrigation*farm_size)+labor_cost-
   maintenance_raincatch
-profit_with_raincatch[1] <- profit_with_raincatch[1] - investment_cost_raincatch*farm_size
+profit_with_raincatch[1] <- profit_with_raincatch[1] - investment_cost_raincatch*farm_size-
+  (cost_irrigation_system*farm_size)-infrastructure_cost
+
 return (list(yield_irrigation = yield_irrigation,
              prices_irrigation = prices_irrigation,
              profit_with_well = profit_with_well))
@@ -207,7 +248,7 @@ plot_distributions(mcSimulation_object = dice_mc_simulation,
 
 flor <- vv(var_mean = 7, 
                      var_CV = 1,
-                     relative_trend = 7,
+                     relative_trend = 2,
                      n = 40)
 
 plot(flor)
@@ -217,5 +258,86 @@ hist(flor, breaks = 50)
 rnorm(40, 7, 1)
 
 
+################################################################################
+
+# Boxplots
+decisionSupport::plot_distributions(mcSimulation_object = irrigation_mc_simulation, 
+                                    vars = c("NPV_well",
+                                             "NPV_no_irrigation",
+                                             "NPV_raincatch"),
+                                    method = 'boxplot')
+
+### Well analysis
+
+# Value of the decision for installing a well
+decisionSupport::plot_distributions(mcSimulation_object = irrigation_mc_simulation, 
+                                    vars = "NPV_decision_well", 
+                                    method = 'boxplot_density')+
+  xlim(-3000000, 25000000)+
+  geom_vline(aes(xintercept = 0))+
+  geom_hline(aes(yintercept = 0))
+
+# Value of Information analysis
+
+mcSimulation_table_well <- data.frame(irrigation_mc_simulation$x, irrigation_mc_simulation$y[c(1,2,4)])
+
+evpi_well <- multi_EVPI(mc = mcSimulation_table_well, first_out_var = "NPV_no_irrigation")
+
+plot_evpi(evpi_well, decision_vars = "NPV_decision_well")
+
+# Compound figure 
+
+compound_figure(mcSimulation_object = irrigation_mc_simulation, 
+                input_table = income_estimates, plsrResults = pls_result_well, 
+                EVPIresults = evpi_well, decision_var_name = "NPV_decision_well", 
+                cashflow_var_name = "Cashflow_well", 
+                base_size = 7)
+
+### Rainwater capture analysis
+
+# Value of the decision for installing rain capture structures
+decisionSupport::plot_distributions(mcSimulation_object = irrigation_mc_simulation, 
+                                    vars = "NPV_decision_raincatch",
+                                    method = 'boxplot_density')+
+  xlim(-3000000, 25000000)+
+  geom_vline(aes(xintercept = 0))+
+  geom_hline(aes(yintercept = 0))
+  
+farma_saiza <- 1:15
+ifelse(farma_saiza/5 == 1, "flor", "no flor")
+plot(log2(farma_saiza)+1)
+
+prueba <- sample(1:500, 5)
+
+matriz <- matrix(1:14, nrow = 4)
+
+arboles <- lapply(X = trees, FUN = mean)
+
+class(arboles)
+  
+## return of investent function v1.0
+yinter <- vector()
+x <- 1
+years <- 1:10
+while (x < 1001)
+{
+  prueba <- vector()
+  prueba[1] <- irrigation_mc_simulation[["y"]][["Cashflow_raincatch1"]][[x]]
+  prueba[2] <- irrigation_mc_simulation[["y"]][["Cashflow_raincatch2"]][[x]]
+  prueba[3] <- irrigation_mc_simulation[["y"]][["Cashflow_raincatch3"]][[x]]
+  prueba[4] <- irrigation_mc_simulation[["y"]][["Cashflow_raincatch4"]][[x]]
+  prueba[5] <- irrigation_mc_simulation[["y"]][["Cashflow_raincatch5"]][[x]]
+  prueba[6] <- irrigation_mc_simulation[["y"]][["Cashflow_raincatch6"]][[x]]
+  prueba[7] <- irrigation_mc_simulation[["y"]][["Cashflow_raincatch7"]][[x]]
+  prueba[8] <- irrigation_mc_simulation[["y"]][["Cashflow_raincatch8"]][[x]]
+  prueba[9] <- irrigation_mc_simulation[["y"]][["Cashflow_raincatch9"]][[x]]
+  prueba[10] <- irrigation_mc_simulation[["y"]][["Cashflow_raincatch10"]][[x]]
+  yinter[x] <- summary(lm(years~prueba))$coefficients[1, 1]
+  x <- x + 1
+}
+
+hist(yinter, 1000)
+
+quantile(yinter)
 
 
