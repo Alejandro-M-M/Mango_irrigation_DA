@@ -156,12 +156,30 @@ plot_evpi(evpi, decision_vars = "NPV_rain_vs_well")
 plot_cashflow(mcSimulation_object = irrigation_mc_simulation, cashflow_var_name = "Cashflow_precise_irrigation")+
   scale_x_continuous(breaks = c("1":"11"))
 
+ROI <- function(z, n, variable, mcsimu)
+{
+  yinter <- vector()
+  years <- 1:10
+  y <- 1
+  while (y <= n)
+  {
+    res <- vector()
+    x <- 1
+    while (x <= z)
+    {
+      res[x] <- mcsimu[["y"]][[paste(variable, x, sep="")]][[y]]
+      x <- x + 1
+    }
+    yinter[y] <- summary(lm(years~res))$coefficients[1, 1]
+    y <- y + 1
+  }
+  return(yinter)
+}
 
+prueba <- ROI(10, 1000, "Cashflow_precise_irrigation", irrigation_mc_simulation)
 
-hola <- "hola"
+quantile(prueba, probs = c(5, 25, 50, 75, 95)/100)
 
-adios <- "caca"
+hist(prueba, breaks = 1000)
 
-hola <- as.text(hola) + "hello"
-
-rbind(hola, adios)
+prueba

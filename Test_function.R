@@ -319,9 +319,11 @@ class(arboles)
 yinter <- vector()
 x <- 1
 years <- 1:10
+
+
 while (x < 1001)
-{
-  prueba <- vector()
+      {
+        prueba <- vector()
   prueba[1] <- irrigation_mc_simulation[["y"]][["Cashflow_raincatch1"]][[x]]
   prueba[2] <- irrigation_mc_simulation[["y"]][["Cashflow_raincatch2"]][[x]]
   prueba[3] <- irrigation_mc_simulation[["y"]][["Cashflow_raincatch3"]][[x]]
@@ -339,5 +341,34 @@ while (x < 1001)
 hist(yinter, 1000)
 
 quantile(yinter)
+
+################### ROI function v2.0
+ROI <- function(z, n, variable, mcsimu)
+{
+  yinter <- vector()
+  years <- 1:10
+  y <- 1
+  while (y <= n)
+  {
+    res <- vector()
+    x <- 1
+    while (x <= z)
+    {
+      res[x] <- mcsimu[["y"]][[paste(variable, x, sep="")]][[y]]
+      x <- x + 1
+    }
+    yinter[y] <- summary(lm(years~res))$coefficients[1, 1]
+    y <- y + 1
+  }
+  return(yinter)
+}
+
+prueba <- ROI(10, 1000, "Cashflow_precise_irrigation", irrigation_mc_simulation)
+
+quantile(prueba, probs = c(5, 25, 50, 75, 95)/100)
+
+hist(prueba, breaks = 1000)
+
+prueba
 
 
