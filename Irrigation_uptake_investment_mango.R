@@ -34,7 +34,7 @@ irrigation_function <- function(){
                           relative_trend = trend,
                           n = years)
   
-  labor_cost <- yield_irrigation*farm_size*500 
+  labor_cost <- yield_irrigation*farm_size*labor_cost
   
   # Profit without irrigation
   profit_no_irrigation <- prices_no_irrigation*yield_no_irrigation*farm_size
@@ -49,7 +49,7 @@ irrigation_function <- function(){
   
   well_supply <- ceiling(farm_size/well_water)
   
-  profit_with_well <- prices_irrigation*yield_irrigation*farm_size*water_quality+labor_cost-maintenance_well 
+  profit_with_well <- prices_irrigation*yield_irrigation*farm_size*water_quality-labor_cost-maintenance_well 
   profit_with_well[1] <- profit_with_well[1] - (investment_cost_well*well_supply+study_cost_well)-
     (cost_irrigation_system*farm_size)-infrastructure_cost 
   
@@ -63,10 +63,10 @@ irrigation_function <- function(){
   # Profit with raincatch. The reduction of the farm for the raincatch area must be considered
   # An area of 30x30 m is considered, reducing the farm size by 9%. Log2 is used on farm size 
   # because expenses are reduced while escalating raincatch size (needs adjustment).  
-  profit_with_raincatch <- (prices_irrigation*yield_irrigation*farm_size*0.91)+labor_cost-
+  profit_with_raincatch <- (prices_irrigation*yield_irrigation*farm_size*(1-raincatch_area))-labor_cost-
     maintenance_raincatch
-  profit_with_raincatch[1] <- profit_with_raincatch[1] - investment_cost_raincatch*log2(farm_size)-
-    (cost_irrigation_system*farm_size*0.91)-infrastructure_cost
+  profit_with_raincatch[1] <- profit_with_raincatch[1] - investment_cost_raincatch*(log2(farm_size)+1)-
+    (cost_irrigation_system*farm_size*(1-raincatch_area))-infrastructure_cost
   
   # Profit with precise irrigation
   profit_precise_irrigation <- prices_irrigation*yield_irrigation*farm_size*yield_increase
@@ -156,10 +156,18 @@ plot_evpi(evpi, decision_vars = "NPV_rain_vs_well")
 plot_cashflow(mcSimulation_object = irrigation_mc_simulation, cashflow_var_name = "Cashflow_precise_irrigation")+
   scale_x_continuous(breaks = c("1":"11"))
 
+
+# Return of investment. This function takes the cumulative cashflow of a decision and calculates the time 
+# it would take to recover the initial investment. The objects it receives are the number of years simulated (z),
+# the number of runs of the monte carlo analysis (n), the name of the cashflow variable (variable) and the name
+# of the monte carlo simulation (mcsimu). The function takes the z number of values for the n monte carlo run,
+# and uses a linear  regression to find the y = 0 intercept value (years to recover investment). This is done 
+# for all n values. It result is a "bell-shaped" distribution, leaning over the right side (Chi-squared??). 
+
 ROI <- function(z, n, variable, mcsimu)
 {
   yinter <- vector()
-  years <- 1:10
+  years <- 1:z
   y <- 1
   while (y <= n)
   {
@@ -170,7 +178,7 @@ ROI <- function(z, n, variable, mcsimu)
       res[x] <- mcsimu[["y"]][[paste(variable, x, sep="")]][[y]]
       x <- x + 1
     }
-    yinter[y] <- summary(lm(years~res))$coefficients[1, 1]
+    yinter[y] <- summary(lm(res~years))$coefficients[1, 1]/-(summary(lm(res~years))$coefficients[2, 1])
     y <- y + 1
   }
   return(yinter)
@@ -182,4 +190,3 @@ quantile(prueba, probs = c(5, 25, 50, 75, 95)/100)
 
 hist(prueba, breaks = 1000)
 
-prueba

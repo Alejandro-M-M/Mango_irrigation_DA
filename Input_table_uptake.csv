@@ -3,7 +3,7 @@ description,label,variable,distribution,lower,median,upper
 "Price of the mango when there is no irrigation, in MXN per ton",Mango price no irrigtion,mango_price_no_irrigation,norm,2500,,5000
 "Rainwater during the year, in mm",Yearly rain,year_rain,norm,500,,1500
 "Rainwater present during the growing season, in mm",Rainwater during growing season,rain_gs,norm,100,,300
-Cost of the irrigation system most recommended and commonly used in the area,Cost of micro-sprinklers,cost_irrigation_system,posnorm,50000,,75000
+Cost of the irrigation system most recommended and commonly used in the area,Cost of micro-sprinklers,cost_irrigation_system,posnorm,35000,,50000
 Cost of building new infrastructure for the storage and transport of extra production,Cost of infrastructure,infrastructure_cost,posnorm,30000,,60000
 Investment cost for precise irrigation,Investment cost - precise irrigation,cost_precise_irri,posnorm,100000,,500000
 Investment cost to install a well,Investment cost - well,investment_cost_well,posnorm,100000,,250000
@@ -18,7 +18,9 @@ Variation thing,Variation thing,Var_CV,norm,8,,11
 Price of the energy for pumping water into the trees,Energy cost,energy_cost,posnorm,1,,2
 Discount rate,Discount rate,dis_rate,posnorm,8,,12
 Number of years for the analysis,Years,years,const,10,,10
+Percent of the area that is used by the raincatch,Raincatch area,raincatch_area,const,0.09,,0.09
 Farm size in ha,Farm size,farm_size,posnorm,1,,15
 "Water quality found on the well. Affected by salinization, and having a negative impact on yield",Water quality,water_quality,posnorm,0.85,,1
 Number of hectares that can be irrigated by the well,Well water,well_water,posnorm,3,,15
 Relative trend of mango price over time,Relative trend,trend,posnorm,6,,7
+Cost of labour per ton of mango harvested,Labor cost,labor_cost,posnorm,800,,1200

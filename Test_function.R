@@ -342,11 +342,11 @@ hist(yinter, 1000)
 
 quantile(yinter)
 
-################### ROI function v2.0
+################### ROI function v2.3
 ROI <- function(z, n, variable, mcsimu)
 {
   yinter <- vector()
-  years <- 1:10
+  years <- 1:z
   y <- 1
   while (y <= n)
   {
@@ -357,7 +357,7 @@ ROI <- function(z, n, variable, mcsimu)
       res[x] <- mcsimu[["y"]][[paste(variable, x, sep="")]][[y]]
       x <- x + 1
     }
-    yinter[y] <- summary(lm(years~res))$coefficients[1, 1]
+    yinter[y] <- summary(lm(res~years))$coefficients[1, 1]/-(summary(lm(res~years))$coefficients[2, 1])
     y <- y + 1
   }
   return(yinter)
@@ -369,6 +369,33 @@ quantile(prueba, probs = c(5, 25, 50, 75, 95)/100)
 
 hist(prueba, breaks = 1000)
 
-prueba
+v1 <- rnorm(100, 50, 5)
+v2 <- rnorm(100, 80, 5)
+v3 <- rnorm(100, 90, 5)
+v4 <- rnorm(100, 150, 5)
 
+
+mi.lista <- list(v1, v2, v3, v4, v5, v6)
+
+mi.lista <- list(mi.lista, mi.lista)
+
+ROI(z=6, n=100, mcsimu=mi.lista)
+
+plot(yinter)
+
+lolia <- 1:6
+loltun <- c(43.7, 89.9, 100.7, 152, 401, 501)
+
+summary(lm(loltun~lolia))$coefficients[1, 1]/-(summary(lm(loltun~lolia))$coefficients[2, 1])
+
+c(irrigation_mc_simulation[["y"]][["Cashflow_precise_irrigation1"]][[734]],
+  irrigation_mc_simulation[["y"]][["Cashflow_precise_irrigation2"]][[734]],
+  irrigation_mc_simulation[["y"]][["Cashflow_precise_irrigation3"]][[734]],
+  irrigation_mc_simulation[["y"]][["Cashflow_precise_irrigation4"]][[734]],
+  irrigation_mc_simulation[["y"]][["Cashflow_precise_irrigation5"]][[734]],
+  irrigation_mc_simulation[["y"]][["Cashflow_precise_irrigation6"]][[734]],
+  irrigation_mc_simulation[["y"]][["Cashflow_precise_irrigation7"]][[734]],
+  irrigation_mc_simulation[["y"]][["Cashflow_precise_irrigation8"]][[734]],
+  irrigation_mc_simulation[["y"]][["Cashflow_precise_irrigation9"]][[734]],
+  irrigation_mc_simulation[["y"]][["Cashflow_precise_irrigation10"]][[734]])
 
