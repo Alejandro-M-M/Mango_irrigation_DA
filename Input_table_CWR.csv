@@ -1,0 +1,11 @@
+description,label,variable,distribution,lower,median,upper
+,,,,,,
+,,,,,,
+"Net radiation in crop surface area, in MJ/m2*día",Net radiation,Rn,,,,
+"Soil heat flux, in MJ/m2*day",Soil heat flux,G,,,,
+"Maximum air temperature 2 meters above the ground, in °C",Maximum air temperature,tmax,,,,
+"Minimum air temperature 2 meters above the ground, in °C",Minimum air temperature,tmin,,,,
+"Wind speed 2 above the ground, in m/s",Wind speed,u2,,,,
+"Elevation above sea level, in meters",Elevation above sea level,elevation,,,,
+Minimum relative humidity,Minimum relative humidity,rhmin,,,,
+Maximum relative humidity,Maximum relative humidity,rhmax,,,,

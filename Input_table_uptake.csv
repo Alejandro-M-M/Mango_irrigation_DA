@@ -1,26 +1,7 @@
 description,label,variable,distribution,lower,median,upper
-"Mango sale price for the farmers when irrigation is applied, in MXN per ton",Mango price when irrigated,mango_price_irrigation,norm,8500,,16000
-"Price of the mango when there is no irrigation, in MXN per ton",Mango price no irrigtion,mango_price_no_irrigation,norm,2500,,5000
-"Rainwater during the year, in mm",Yearly rain,year_rain,norm,500,,1500
-"Rainwater present during the growing season, in mm",Rainwater during growing season,rain_gs,norm,100,,300
-Cost of the irrigation system most recommended and commonly used in the area,Cost of micro-sprinklers,cost_irrigation_system,posnorm,35000,,50000
-Cost of building new infrastructure for the storage and transport of extra production,Cost of infrastructure,infrastructure_cost,posnorm,30000,,60000
-Investment cost for precise irrigation,Investment cost - precise irrigation,cost_precise_irri,posnorm,100000,,500000
-Investment cost to install a well,Investment cost - well,investment_cost_well,posnorm,100000,,250000
-Investment cost to install a raincatch,Investment cost - raincatch,investment_cost_raincatch,posnorm,200000,,350000
-Maintenance cost for the raincatch,Maintenance cost for the raincatch,maintenance_raincatch,posnorm,1000,,3000
-Maintenance cost for the well,Maintenance cost for the well,maintenance_well,posnorm,500,,2000
-Increase in yield when precise irrigation is applied,Increase in yield precise irrigation,yield_increase,tnorm_0_1,0.03,,0.1
-Variation thing,Variation thing,Var_CV,norm,8,,11
-"Mango yield when irrigated, expressed in tons/hectare",Mango yield irrigation,yield_irrigation,norm,8,,16
-"Yield of mango trees when no irrigation is present, expressed in tons per hectare",Yield no irrigation,yield_no_irrigation,norm,5,,8
-"Cost of the hidrogeological study, in MXN, to asses the superficial soil layer and water availability ",Cost of hidrogeological study,study_cost_well,const,45000,,45000
-Price of the energy for pumping water into the trees,Energy cost,energy_cost,posnorm,1,,2
-Discount rate,Discount rate,dis_rate,posnorm,8,,12
-Number of years for the analysis,Years,years,const,10,,10
-Percent of the area that is used by the raincatch,Raincatch area,raincatch_area,const,0.09,,0.09
-Farm size in ha,Farm size,farm_size,posnorm,1,,15
-"Water quality found on the well. Affected by salinization, and having a negative impact on yield",Water quality,water_quality,posnorm,0.85,,1
-Number of hectares that can be irrigated by the well,Well water,well_water,posnorm,3,,15
-Relative trend of mango price over time,Relative trend,trend,posnorm,6,,7
-Cost of labour per ton of mango harvested,Labor cost,labor_cost,posnorm,800,,1200
+Conversion factor 1,Conversion factor 1,cf1,,,,
+Conversion factor 2,Conversion factor 2,cf2,,,,
+Conversion factor 3,Conversion factor 3,cf3,,,,
+Conversion factor 4,Conversion factor 4,cf4,,,,
+"Slope of the vapour pressure curve, in kPa °C-1",Delta,delta,,,,
+"Net radiation in crop surface area, in MJ m-2 día-1",Net radiation,Rn,,,,
