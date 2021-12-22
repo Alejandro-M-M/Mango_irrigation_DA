@@ -1,11 +1,10 @@
 description,label,variable,distribution,lower,median,upper
-,,,,,,
-,,,,,,
-"Net radiation in crop surface area, in MJ/m2*día",Net radiation,Rn,,,,
-"Soil heat flux, in MJ/m2*day",Soil heat flux,G,,,,
-"Maximum air temperature 2 meters above the ground, in °C",Maximum air temperature,tmax,,,,
-"Minimum air temperature 2 meters above the ground, in °C",Minimum air temperature,tmin,,,,
-"Wind speed 2 above the ground, in m/s",Wind speed,u2,,,,
-"Elevation above sea level, in meters",Elevation above sea level,elevation,,,,
-Minimum relative humidity,Minimum relative humidity,rhmin,,,,
-Maximum relative humidity,Maximum relative humidity,rhmax,,,,
+"Maximum air temperature 2 meters above the ground, in °C",Maximum air temperature,tmax,norm,28,,34
+"Minimum air temperature 2 meters above the ground, in °C",Minimum air temperature,tmin,norm,15,,20
+"Wind speed 2 above the ground, in m/s",Wind speed,u2,norm,0.1,,3
+"Elevation above sea level, in meters",Elevation above sea level,elevation,norm,10,,100
+Minimum relative humidity,Minimum relative humidity,rhmin,norm,70,,80
+Maximum relative humidity,Maximum relative humidity,rhmax,norm,80,,100
+"Real daily isolation length, in hours",Real daily isolation length,n,norm,9,,12
+"Day of the year, starting from January 1st",Day of the year,day,const,1,,1
+Latitude in degrees and decimals. Negative for Southern hemisphere,Latitude,dlat,norm,17,,18

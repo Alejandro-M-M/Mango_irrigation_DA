@@ -21,7 +21,7 @@ irrigation_function <- function(){
   # by getting the average of the individual relative trend between years. Var_CV
   # was obtained by calculating the standard deviation of the prices, having the 
   # mean of the values given by the function with the relative trend. 
-  # File → Precio_mango_Guerrero_1980_2019.xlsx
+  # File - Precio_mango_Guerrero_1980_2019.xlsx
   
   prices_irrigation <- vv(var_mean = mango_price_irrigation, 
                        var_CV = Var_CV,
