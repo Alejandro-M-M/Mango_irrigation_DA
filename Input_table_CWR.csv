@@ -1,10 +1,25 @@
-description,label,variable,distribution,lower,median,upper
-"Maximum air temperature 2 meters above the ground, in °C",Maximum air temperature,tmax,norm,28,,34
-"Minimum air temperature 2 meters above the ground, in °C",Minimum air temperature,tmin,norm,15,,20
-"Wind speed 2 above the ground, in m/s",Wind speed,u2,norm,0.1,,3
-"Elevation above sea level, in meters",Elevation above sea level,elevation,norm,10,,100
-Minimum relative humidity,Minimum relative humidity,rhmin,norm,70,,80
-Maximum relative humidity,Maximum relative humidity,rhmax,norm,80,,100
-"Real daily isolation length, in hours",Real daily isolation length,n,norm,9,,12
-"Day of the year, starting from January 1st",Day of the year,day,const,1,,1
-Latitude in degrees and decimals. Negative for Southern hemisphere,Latitude,dlat,norm,17,,18
+description,label,variable,distribution,lower,median,upper,
+"Maximum air temperature 2 meters above the ground, in °C",Maximum air temperature,tmax1,norm,29,,33,
+"Minimum air temperature 2 meters above the ground, in °C",Minimum air temperature,tmin1,norm,15,,20,
+"Wind speed 2 above the ground, in m/s",Wind speed,u2_1,posnorm,0.1,,1,
+"Elevation above sea level, in meters",Elevation above sea level,elevation,posnorm,10,,100,
+Minimum relative humidity,Minimum relative humidity,rhmin1,posnorm,70,,80,
+Maximum relative humidity,Maximum relative humidity,rhmax1,posnorm,81,,100,
+"Real daily isolation length, in hours",Real daily isolation length,n,posnorm,9,,10,
+"First day of the year for the period, starting from January 1st",First day of the year,day1,const,360,,360,
+Latitude in degrees and decimals. Negative for Southern hemisphere,Latitude,dlat,norm,17,,18,
+"Height of the tree, in meters",Height,h,norm,4,,6,
+Basal crop coefficient for the calculation of Kc,Basal crop coefficient,Kcb_tab,tnorm_0_1,0.8,,0.9,
+"Moisture at field capacity, in m3/m3",Moisture at field capacity,fcd,tnorm_0_1,0.05,,0.2,
+"Moisture at wilting point, in m3/m3",Moisture at wilting point,wp,tnorm_0_1,0.02,,0.29,
+"depth of the soil evaporation layer, in meters",Soil evaporation layer depth,Ze,tnorm_0_1,0.1,,0.15,
+Accumulated sheet of evaporation at the end of the first evaporation stage,Easily evaporable water,AFE,posnorm,2,,12,
+Area covered by the crop,Crop cover area,fq,tnorm_0_1,0.7,,0.9,
+Area covered by water during irrigation or rain,Water cover area,fw,posnorm,0.1,,0.4,
+Chance of rain,Chance of rain,chance_rain,const,0.05,,0.05,
+"Precipitation ammount, in mm",Precipitation,Prec,posnorm,1,,8,
+"Interval between irrigation periods, in days",Interval between irrigation periods,Ir_interval,const,3,,3,
+Number of days,Number of days,x,const,30,,30,
+Initial De,Initial De,De,const,0,,0,
+"Depth of the roots, in m",Root depth,Zr,posnorm,1,,1.5,from Teixeira et al 2009
+ADT fraction,ADT fraction,p,tnorm_0_1,0.5,,0.7,
