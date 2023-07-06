@@ -1,10 +1,6 @@
 
 # Housekeeping
 rm(list = ls())
-# 
-# setwd("C:/Users/tito_/Dropbox/Thesis/R") 
-# 
-# .libPaths("C:/Users/tito_/Dropbox/Thesis/R/Library")
 
 # Library 
 library(decisionSupport)
@@ -43,7 +39,7 @@ irrigation_function <- function(){
   # Profit with well. Here, as well as with raincatch, an investment for an irrigation
   # system was considered. Also infrastructure cost for a storehouse. The investments
   # were fixed to the first value of the profit vector. For the specific case of the
-  # deep well, a preliminary study cost is added, to asess the location of the aquifer 
+  # deep well, a preliminary study cost is added, to assess the location of the aquifer 
   # and the requirements for the excavation. More than one well may be needed to supply
   # the field
   
